@@ -1,0 +1,8 @@
+# STM32CubeIDE
+/.settings/
+.cproject
+.project
+
+#build folders
+/Debug/
+/Release/
