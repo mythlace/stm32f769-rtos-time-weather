@@ -2,7 +2,10 @@
 /.settings/
 .cproject
 .project
+*.launch
 
 #build folders
 /Debug/
 /Release/
+
+
