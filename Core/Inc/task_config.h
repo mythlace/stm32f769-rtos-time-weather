@@ -23,11 +23,36 @@
 #define TASK_PRIORITY_LOWEST	tskIDLE_PRIORITY + 1	/**< Lowest task priority */
 /** @} */
 
+
 /**
- * @def TASK_PRIORITY_BACKGROUND
- * @brief Priority of task that run in background
+ * @def PRIORITY_CRITICAL
+ * @brief Priority of tasks that have hard real-time constraints
  */
-#define TASK_PRIORITY_BACKGROUND	TASK_PRIORITY_LOWEST
+#define PRIORITY_CRITICAL	TASK_PRIORITY_HIGHEST
+
+/**
+ * @def PRIORITY_REALTIME
+ * @brief Priority of tasks that are time critical
+ */
+#define PRIORITY_REALTIME	TASK_PRIORITY_HIGH
+
+/**
+ * @def PRIORITY_APPLICATION
+ * @brief Priority of main application tasks
+ */
+#define PRIORITY_APPLICATION	TASK_PRIORITY_NORMAL
+
+/**
+ * @def PRIORITY_SERVICE
+ * @brief Priority of tasks that can defer work
+ */
+#define PRIORITY_SERVICE	TASK_PRIORITY_LOW
+
+/**
+ * @def PRIORITY_BACKGROUND
+ * @brief Priority of tasks that run in background
+ */
+#define PRIORITY_BACKGROUND	TASK_PRIORITY_LOWEST
 
 
 #endif /* INC_TASK_CONFIG_H_ */

@@ -15,4 +15,6 @@
 void tasks_create_all(void) {
 	// Create status LED task
 	status_led_task_create();
+	// Create UART terminal task
+	uart_terminal_task_create();
 }
