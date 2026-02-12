@@ -12,7 +12,7 @@
 #define INC_UART_TERMINAL_TASK_H_
 
 #include "task_config.h"
-
+#include "queue.h"
 /**
  * @def UART_QUEUE_LENGTH
  * @brief Length of the queue
