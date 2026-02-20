@@ -11,7 +11,8 @@
 
 #include "status_led_task.h"
 #include "main.h"
-#include "cmsis_os.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 /** @brief Handle for the task */
 static TaskHandle_t status_led_task_handle = NULL;
@@ -37,7 +38,6 @@ void status_led_task_create(void) {
  * @param argument (unused)
  */
 void task_status_led(void *argument) {
-	TickType_t wake_tick = xTaskGetTickCount();;
 	while(1) {
 		// Double flash
 		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
@@ -47,8 +47,8 @@ void task_status_led(void *argument) {
 		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 		vTaskDelay(pdMS_TO_TICKS(50));
 		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
-		// Wait until next 5s
-		vTaskDelayUntil(&wake_tick, pdMS_TO_TICKS(5000));
+		// Wait for total of 5 seconds
+		vTaskDelay(pdMS_TO_TICKS(4800));
 	}
 }
 

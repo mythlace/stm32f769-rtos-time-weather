@@ -12,13 +12,19 @@
 #include "status_led_task.h"
 #include "uart_terminal_task.h"
 #include "system_stats_task.h"
+#include "ntp_client.h"
 
 /** @brief Create all tasks */
 void tasks_create_all(void) {
 	// Create status LED task
 	status_led_task_create();
+
 	// Create UART terminal task
 	uart_terminal_task_create();
+
 	// Create System stats task
 	system_stats_task_create();
+
+	// Create NTP client task
+	ntp_client_task_create();
 }

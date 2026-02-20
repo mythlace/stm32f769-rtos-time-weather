@@ -62,6 +62,8 @@ void Error_Handler(void);
 #define BTN2_Pin GPIO_PIN_14
 #define BTN2_GPIO_Port GPIOJ
 #define BTN2_EXTI_IRQn EXTI15_10_IRQn
+#define RMII_RXER_Pin GPIO_PIN_5
+#define RMII_RXER_GPIO_Port GPIOD
 #define LED2_Pin GPIO_PIN_5
 #define LED2_GPIO_Port GPIOJ
 #define BTN1_Pin GPIO_PIN_0

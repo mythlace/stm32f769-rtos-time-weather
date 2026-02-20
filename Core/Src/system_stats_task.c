@@ -8,16 +8,20 @@
  * @author mdev 
  */
 
+#include <stdio.h>
 #include "main.h"
 #include "FreeRTOS.h"
 #include "system_stats_task.h"
-#include <stdio.h>
+#include "netif.h"
 
 /** @brief Handle of system stats task*/
 static TaskHandle_t system_stats_task_handle = NULL;
 
 /** @brief Timer for run time stats measurement */
 extern TIM_HandleTypeDef htim5;
+
+/** @brief lwIP network interface structure */
+extern struct netif gnetif;
 
 /** @brief Start timer for run time stats */
 void configureTimerForRunTimeStats(void) {
@@ -49,8 +53,7 @@ void system_stats_task_create(void) {
  * @param arguments (unused)
  */
 void task_system_stats(void *arguments) {
-	//char *buffer;
-	BaseType_t task_count = uxTaskGetNumberOfTasks();
+	BaseType_t task_count;
 	TaskStatus_t *task_status_array;
 	unsigned long total_run_time;
 	unsigned long cpu_percent;
@@ -61,26 +64,30 @@ void task_system_stats(void *arguments) {
 	while(1) {
 		// Wait for notification
 		ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+		task_count = uxTaskGetNumberOfTasks();
 		// Allocate required space
 		task_status_array = pvPortMalloc(task_count * sizeof( TaskStatus_t));
 		configASSERT(task_status_array != NULL);
 		// get system state
 		long actual_task_count = uxTaskGetSystemState(task_status_array, task_count, &total_run_time);
-
+		printf("\n--------------------------------------------------\n");
 		if (total_run_time > 0) {
-			printf("%-20s%15s%15s\n","Task", "Free Stack", "CPU");
-			printf("%-20s%15s%15s\n","----------", "----------", "---");
+			printf("%-20s%15s%15s%15s\n","Task", "Priority","Free Stack", "CPU");
+			printf("%-20s%15s%15s%15s\n","----------", "--------", "----------", "---");
+			total_run_time /= 100ul;
 			for (long i = 0; i < actual_task_count; i++){
-				cpu_percent = ((task_status_array[i].ulRunTimeCounter * 100ul) / total_run_time);
+				cpu_percent = (task_status_array[i].ulRunTimeCounter / total_run_time);
 				if (cpu_percent > 0){
-					printf("%-20s%15u%15lu%%\n",
+					printf("%-20s%15lu%15u%15lu%%\n",
 						task_status_array[i].pcTaskName,
+						task_status_array[i].uxBasePriority,
 						task_status_array[i].usStackHighWaterMark,
 						cpu_percent
 					);
 				} else {
-					printf("%-20s%15u%15s%%\n",
+					printf("%-20s%15lu%15u%15s%%\n",
 						task_status_array[i].pcTaskName,
+						task_status_array[i].uxBasePriority,
 						task_status_array[i].usStackHighWaterMark,
 						"<1"
 					);
@@ -89,6 +96,8 @@ void task_system_stats(void *arguments) {
 			}
 			printf("\n");
 		}
+		vPortFree(task_status_array);
+
 
 		// Memory usage
 		unsigned long totalHeap = configTOTAL_HEAP_SIZE;
@@ -99,10 +108,22 @@ void task_system_stats(void *arguments) {
 
 		unsigned long usedPercentage = (usedHeap*100) / totalHeap;
 		unsigned long maxUsedPercentage = (maxUsedHeap*100) / totalHeap;
-
+		printf("-----\n");
 		printf("Total Memory: %lu KB\nMemory used = %lu KB (%lu%%)\nMax used = %lu KB (%lu%%)\n\n",
 			totalHeap/1024, usedHeap/1024, usedPercentage, maxUsedHeap/1024, maxUsedPercentage
 		);
+
+		// Network
+		printf("----- \n");
+		if (netif_is_up(&gnetif) && netif_is_link_up(&gnetif)) {
+			printf("- Link is up\n");
+		} else {
+			printf("- Link is down\n");
+		}
+		printf("IP: %s\n", ip4addr_ntoa(&gnetif.ip_addr));
+		printf("Netmask: %s\n", ip4addr_ntoa(&gnetif.netmask));
+		printf("Gateway: %s\n", ip4addr_ntoa(&gnetif.gw));
+
 	}
 }
 

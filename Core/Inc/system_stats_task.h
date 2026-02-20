@@ -24,7 +24,7 @@
  * @def SYSTEM_STATS_TASK_STACK_SIZE
  * @brief Stack size of system stats task
  */
-#define SYSTEM_STATS_TASK_STACK_SIZE	256
+#define SYSTEM_STATS_TASK_STACK_SIZE	512
 
 /** @brief Create system stats task */
 void system_stats_task_create(void);
