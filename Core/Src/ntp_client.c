@@ -28,11 +28,10 @@ extern struct netif gnetif;
 static TaskHandle_t ntp_client_task_handle = NULL;
 
 /**
- * @def LOCAL_TIME_OFFSET_SECONDS
- * @brief Local time offset in seconds
- *
+ * @def TZ_VALUE
+ * @brief POSIX time zone format string
  */
-#define LOCAL_TIME_OFFSET_SECONDS (-5 * 3600)
+#define TZ_VALUE "EST5EDT,M3.2.0/2,M11.1.0/2"
 
 /** @brief Create NTP client task */
 void ntp_client_task_create(void)
@@ -67,7 +66,7 @@ void task_ntp_client(void *argument)
     	// Wait for notification
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
-        printf("NTP sync ...\n");
+        printf("NTP sync...");
         // Check if link is up
         if (!netif_is_up(&gnetif) || !netif_is_link_up(&gnetif)) {
             printf("Link is down\n");
@@ -85,7 +84,7 @@ void task_ntp_client(void *argument)
         int sock = socket(AF_INET, SOCK_DGRAM, 0);
         if (sock < 0) {
             printf("Socket failed\n");
-            break;
+            return;
         }
 
         // Configure server address and port
@@ -101,9 +100,9 @@ void task_ntp_client(void *argument)
 
         // Send NTP request
         if (sendto(sock, packet, sizeof(packet), 0, (struct sockaddr *)&server, sizeof(server)) < 0) {
-            printf("Send failed\r\n");
+            printf("Send failed\n");
             close(sock);
-            break;
+            return;
         }
 
         // Set receive timeout
@@ -116,12 +115,12 @@ void task_ntp_client(void *argument)
         if (recvfrom(sock, packet, sizeof(packet), 0, (struct sockaddr *)&from, &from_len) < 0) {
             printf("NTP receive timeout\n");
             close(sock);
-            break;
+            return;
         }
-
         // Close socket
         close(sock);
 
+        printf("Done!\n");
         // Extract seconds from received packet
         uint32_t seconds;
         memcpy(&seconds, &packet[40], 4);
@@ -129,20 +128,24 @@ void task_ntp_client(void *argument)
 
         // Unix time stamp
         uint32_t unix_time = seconds - 2208988800UL;
-        // Apply local offset
-        uint32_t local_time = unix_time + LOCAL_TIME_OFFSET_SECONDS;
+
+
+        setenv("TZ", TZ_VALUE, 1);
+		tzset();
 
         // Format and print time
-        time_t t = local_time;
-        struct tm *tm_info = gmtime(&t);
+        time_t utc_time = unix_time;
 
-        printf("EST Time: %02d:%02d:%02d  %02d-%02d-%04d\r\n",
-		   tm_info->tm_hour,
-		   tm_info->tm_min,
-		   tm_info->tm_sec,
-		   tm_info->tm_mday,
-		   tm_info->tm_mon + 1,
-		   tm_info->tm_year + 1900
+        struct tm local_time;
+        localtime_r(&utc_time, &local_time);
+
+        printf("Local time: %02d:%02d:%02d  %02d-%02d-%04d\n",
+			local_time.tm_hour,
+			local_time.tm_min,
+			local_time.tm_sec,
+			local_time.tm_mday,
+			local_time.tm_mon + 1,
+			local_time.tm_year + 1900
 	   );
     }
 }
