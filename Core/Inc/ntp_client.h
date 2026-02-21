@@ -9,11 +9,13 @@
 #ifndef INC_NTP_CLIENT_H_
 #define INC_NTP_CLIENT_H_
 
+#include "task_config.h"
+
 /**
  * @def NTP_CLIENT_PRIORITY
  * @brief Priority level of the NTP client task.
  */
-#define NTP_CLIENT_PRIORITY		2
+#define NTP_CLIENT_PRIORITY		TASK_PRIORITY_LOW
 
 /**
  * @def NTP_CLIENT_STACK_SIZE

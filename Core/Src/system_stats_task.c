@@ -13,6 +13,7 @@
 #include "FreeRTOS.h"
 #include "system_stats_task.h"
 #include "netif.h"
+#include "rtc.h"
 
 /** @brief Handle of system stats task*/
 static TaskHandle_t system_stats_task_handle = NULL;
@@ -124,6 +125,9 @@ void task_system_stats(void *arguments) {
 		printf("Netmask: %s\n", ip4addr_ntoa(&gnetif.netmask));
 		printf("Gateway: %s\n", ip4addr_ntoa(&gnetif.gw));
 
+		// RTC
+		printf("\n----- \n");
+		rtc_print_current_time();
 	}
 }
 
