@@ -14,6 +14,7 @@
 #include "system_stats_task.h"
 #include "netif.h"
 #include "rtc.h"
+#include "net_monitor.h"
 
 /** @brief Handle of system stats task*/
 static TaskHandle_t system_stats_task_handle = NULL;
@@ -116,14 +117,14 @@ void task_system_stats(void *arguments) {
 
 		// Network
 		printf("----- \n");
-		if (netif_is_up(&gnetif) && netif_is_link_up(&gnetif)) {
-			printf("- Link is up\n");
+		if (is_network_ready()) {
+			printf("Connected to network");
+			printf("IP: %s\n", ip4addr_ntoa(&gnetif.ip_addr));
+			printf("Netmask: %s\n", ip4addr_ntoa(&gnetif.netmask));
+			printf("Gateway: %s\n", ip4addr_ntoa(&gnetif.gw));
 		} else {
-			printf("- Link is down\n");
+			printf("Network disconnected\n");
 		}
-		printf("IP: %s\n", ip4addr_ntoa(&gnetif.ip_addr));
-		printf("Netmask: %s\n", ip4addr_ntoa(&gnetif.netmask));
-		printf("Gateway: %s\n", ip4addr_ntoa(&gnetif.gw));
 
 		// RTC
 		printf("\n----- \n");

@@ -1,13 +1,13 @@
 /**
- * @file ntp_client.h
+ * @file ntp_client_task.h
  * @brief Implement NTP client task
  *
  * @date Feb 14, 2026
  * @author mdev 
  */
 
-#ifndef INC_NTP_CLIENT_H_
-#define INC_NTP_CLIENT_H_
+#ifndef INC_NTP_CLIENT_TASK_H_
+#define INC_NTP_CLIENT_TASK_H_
 
 #include "task_config.h"
 
@@ -26,6 +26,7 @@
 
 /** @brief Create NTP client task */
 void ntp_client_task_create(void);
+
 
 /**
  * @brief Implement NTP client task
@@ -48,4 +49,4 @@ void sync_time_FromISR(void);
 TaskHandle_t ntp_client_get_handle(void);
 
 
-#endif /* INC_NTP_CLIENT_H_ */
+#endif /* INC_NTP_CLIENT_TASK_H_ */

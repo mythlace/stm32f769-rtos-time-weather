@@ -14,6 +14,4 @@
 /** @brief Create all task */
 void tasks_create_all(void);
 
-//void task_sync_time(void *arguments);
-
 #endif /* INC_TASKS_INIT_H_ */

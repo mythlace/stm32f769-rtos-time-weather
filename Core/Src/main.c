@@ -25,7 +25,8 @@
 /* USER CODE BEGIN Includes */
 #include "tasks_init.h"
 #include "system_stats_task.h"
-#include "ntp_client.h"
+#include "ntp_client_task.h"
+#include "net_monitor.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -74,9 +75,6 @@ void StartDefaultTask(void const * argument);
  * @brief External interrupt callback
  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	if(GPIO_Pin == BTN1_Pin) {
-		sync_time_FromISR();
-	}
 	if(GPIO_Pin == BTN2_Pin) {
 		print_system_stats_FromISR();
 	}
@@ -439,6 +437,8 @@ void StartDefaultTask(void const * argument)
   /* init code for LWIP */
   MX_LWIP_Init();
   /* USER CODE BEGIN 5 */
+  // Register network interface callbacks
+  net_monitor_reg_netif_callbacks();
   /* Infinite loop */
   for(;;)
   {

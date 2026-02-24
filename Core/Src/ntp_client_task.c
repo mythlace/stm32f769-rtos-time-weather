@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "ntp_client.h"
+#include "ntp_client_task.h"
 #include "rtc.h"
 
 /**@brief Weekday names (NTP compatible)*/
@@ -70,10 +70,10 @@ void task_ntp_client(void *argument)
     	// Wait for notification
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
-        printf("NTP sync...");
+        printf("NTP sync... ");
         // Check if link is up
-        if (!netif_is_up(&gnetif) || !netif_is_link_up(&gnetif)) {
-            printf("Link is down\n");
+        if (!is_network_ready()) {
+            printf("failed!\nNetwork error.\n");
             return;
         }
 
@@ -124,7 +124,7 @@ void task_ntp_client(void *argument)
         // Close socket
         close(sock);
 
-        printf(" Done\n");
+        printf("Done\n");
         // Extract seconds from received packet
         uint32_t seconds;
         memcpy(&seconds, &packet[40], 4);
