@@ -118,7 +118,7 @@ void task_system_stats(void *arguments) {
 		// Network
 		printf("----- \n");
 		if (is_network_ready()) {
-			printf("Connected to network");
+			printf("Connected to network\n");
 			printf("IP: %s\n", ip4addr_ntoa(&gnetif.ip_addr));
 			printf("Netmask: %s\n", ip4addr_ntoa(&gnetif.netmask));
 			printf("Gateway: %s\n", ip4addr_ntoa(&gnetif.gw));

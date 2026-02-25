@@ -21,15 +21,7 @@
 
 #include "ntp_client_task.h"
 #include "rtc.h"
-
-/**@brief Weekday names (NTP compatible)*/
-static const char *weekdays[7] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
-
-/** @brief Network interface data structure */
-extern struct netif gnetif;
-
-/** @brief Handle for NTP client task */
-static TaskHandle_t ntp_client_task_handle = NULL;
+#include "net_monitor.h"
 
 /**
  * @def TZ_VALUE
@@ -37,9 +29,19 @@ static TaskHandle_t ntp_client_task_handle = NULL;
  */
 #define TZ_VALUE "EST5EDT,M3.2.0/2,M11.1.0/2"
 
+/** @brief Network interface data structure */
+extern struct netif gnetif;
+
+/** @brief Handle for NTP client task */
+static TaskHandle_t ntp_client_task_handle = NULL;
+
 /** @brief Create NTP client task */
 void ntp_client_task_create(void)
 {
+	// Set time zone env variable
+	setenv("TZ", TZ_VALUE, 1);
+	tzset();
+
     xTaskCreate(
         task_ntp_client,
         "NTP Client",
@@ -132,30 +134,9 @@ void task_ntp_client(void *argument)
 
         // Unix time stamp
         uint32_t unix_time = seconds - 2208988800UL;
-
-
-        setenv("TZ", TZ_VALUE, 1);
-		tzset();
-
-		// Convert to local time
-        time_t utc_time = unix_time;
-        struct tm local_time;
-        localtime_r(&utc_time, &local_time);
-
         //Set RTC
-		rtc_set_from_tm(&local_time);
-
-        printf("Local time: %02d:%02d:%02d  %s %02d-%02d-%04d\n",
-			local_time.tm_hour,
-			local_time.tm_min,
-			local_time.tm_sec,
-			weekdays[local_time.tm_wday],
-			local_time.tm_mon + 1,
-			local_time.tm_mday,
-			local_time.tm_year + 1900
-	   );
-
-       rtc_print_current_time();
+        rtc_set_from_sec(unix_time);
+		rtc_print_current_time();
     }
 }
 

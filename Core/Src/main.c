@@ -26,7 +26,6 @@
 #include "tasks_init.h"
 #include "system_stats_task.h"
 #include "ntp_client_task.h"
-#include "net_monitor.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -437,8 +436,7 @@ void StartDefaultTask(void const * argument)
   /* init code for LWIP */
   MX_LWIP_Init();
   /* USER CODE BEGIN 5 */
-  // Register network interface callbacks
-  net_monitor_reg_netif_callbacks();
+
   /* Infinite loop */
   for(;;)
   {

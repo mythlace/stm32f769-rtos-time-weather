@@ -11,13 +11,15 @@
 
 /**
  * @brief Set RTC from tm
+ *
  * @param t Pointer to tm
  */
-void rtc_set_from_tm(struct tm *t);
+void rtc_set_from_sec(uint32_t sec);
 
 /**
  * @brief Print current system time
  */
 void rtc_print_current_time(void);
+
 
 #endif /* INC_RTC_H_ */
